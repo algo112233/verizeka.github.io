@@ -1,6 +1,5 @@
 <!--
 Verizeka Robot Tanıtım Sitesi
-
 Hosting Ücretsiz (GitHub Pages):
 1. GitHub'da yeni repo oluşturun ve adını <kullaniciadi>.github.io koyun.
 2. Bu index.html dosyasını repoya ekleyip commit edin.
@@ -22,7 +21,12 @@ Hosting Ücretsiz (GitHub Pages):
     section { padding:40px 20px; max-width:800px; margin:0 auto; }
     .features { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
     .feature { background:#f4f4f4; padding:20px; border-radius:5px; }
+    #indicators { margin-top:40px; }
+    details { background:#f9f9f9; border-radius:5px; padding:10px; margin-bottom:10px; }
+    summary { font-weight:bold; cursor:pointer; outline:none; }
+    pre { background:#272822; color:#f8f8f2; padding:15px; border-radius:5px; overflow-x:auto; font-family:'Courier New', monospace; }
     footer { background:#eee; text-align:center; padding:20px; font-size:0.9rem; }
+    footer a { color:#0057a3; text-decoration:none; }
   </style>
 </head>
 <body>
@@ -54,11 +58,99 @@ Hosting Ücretsiz (GitHub Pages):
     </div>
   </section>
 
-  <section style="text-align:center;">
+  <section id="indicators">
+    <h2>Örnek Pine Script İndikatör Kodları</h2>
+    <!-- Turbo Scalper -->
+    <details>
+      <summary>Turbo Scalper v1.1 (Auto TF)</summary>
+      <pre><code>
+//@version=5
+indicator("Turbo Scalper v1.1 (Auto TF)", overlay=true)
+
+// === Girişler ===
+atrLen       = input.int(10, title="ATR Periyodu")
+atrFactor    = input.float(3.0, title="SuperTrend Faktörü")
+rsiLen       = input.int(14, title="QQE RSI Periyodu")
+qqeLen       = input.int(7, title="QQE WMA Uzunluğu")
+volLen       = input.int(20, title="Hacim Ort. Periyodu")
+volFactor    = input.float(1.0, title="Hacim Eşik Çarpanı")
+atrVolLen    = input.int(10, title="Volatilite ATR Periyodu")
+atrFactor2   = input.float(1.0, title="Volatilite Eşik Çarpanı")
+
+// === Ana Hesaplamalar ===
+[super_, dir] = ta.supertrend(atrFactor, atrLen)
+rsi_val    = ta.rsi(close, rsiLen)
+rsi_diff   = rsi_val - nz(rsi_val[1])
+qqeMom     = ta.wma(rsi_diff, qqeLen)
+atr_val    = ta.atr(atrVolLen)
+avg_atr    = ta.sma(atr_val, atrVolLen)
+atr_ok     = atr_val > avg_atr * atrFactor2
+avg_vol    = ta.sma(volume, volLen)
+vol_ok     = volume > avg_vol * volFactor
+volFilter  = atr_ok and vol_ok
+longS      = ta.crossover(close, super_)  and qqeMom > 0  and volFilter
+shortS     = ta.crossunder(close, super_) and qqeMom < 0  and volFilter
+
+plot(super_, title="SuperTrend", color=color.new(dir == 1 ? color.green : color.red, 0), linewidth=2)
+plotshape(longS,  title="Long Sinyal",  location=location.belowbar, color=color.green, style=shape.triangleup, size=size.small)
+plotshape(shortS, title="Short Sinyal", location=location.abovebar, color=color.red, style=shape.triangledown, size=size.small)
+
+alertcondition(longS,  title="Long Sinyali",  message="Turbo Scalper: LONG sinyali!")
+alertcondition(shortS, title="Short Sinyali", message="Turbo Scalper: SHORT sinyali!")
+      </code></pre>
+    </details>
+    <!-- BSE -->
+    <details>
+      <summary>BSE (Sadeleştirilmiş – Sadece On-Chart Verisi V2)</summary>
+      <pre><code>
+//@version=5
+indicator("BSE (Sadeleştirilmiş – Sadece On-Chart Verisi VERSİON2)", overlay=false)
+
+// ==== 1. Girdi Parametreleri ====
+... (kod devamı) ...
+      </code></pre>
+    </details>
+    <!-- Diğer İndikatörler -->
+    <details>
+      <summary>Static ATR Cloud on Close</summary>
+      <pre><code>
+//@version=6
+indicator("Static ATR Cloud on Close", overlay=true)
+...
+      </code></pre>
+    </details>
+    <details>
+      <summary>Day Trade Scalp PerfectUSE</summary>
+      <pre><code>
+//@version=5
+indicator("Day Trade Scalp PerfectUSE", overlay=true, max_bars_back=200)
+...
+      </code></pre>
+    </details>
+    <details>
+      <summary>Volatility Breakout + Trend Confirmation Strategy</summary>
+      <pre><code>
+//@version=5
+strategy("Volatility Breakout + Trend Confirmation Strategy", overlay=true, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+...
+      </code></pre>
+    </details>
+    <details>
+      <summary>YUTAN AYI-BOĞA</summary>
+      <pre><code>
+//@version=5
+indicator("YUTAN AYI-BOĞA", overlay=true)
+...
+      </code></pre>
+    </details>
+  </section>
+
+  <section style="text-align:center; margin-top:20px;">
     <a href="#" class="btn">Ücretsiz Deneme Başlat</a>
   </section>
 
   <footer>
+    <p>Twitter: <a href="https://x.com/free_ind_turk" target="_blank">@free_ind_turk</a></p>
     &copy; 2025 Verizeka Robotu. Tüm hakları saklıdır.
   </footer>
 </body>
